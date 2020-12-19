@@ -1,2 +1,76 @@
 ---
-# tasks
+# Request the certificate for the host from IPA
+# System must be enrolled as an IPA Client and must be ran as root
+- name: Check if host is IPA enrolled
+  shell: /usr/sbin/ipa-client-install --unattended 2>&1 | grep "already configured"
+  register: ipacheck
+  ignore_errors: true
+
+- name: IPA Certificate Operations
+  block:
+    - name: Request Certificate
+      command: ipa-getcert request -r -w \
+        -I "{{ item }}" \
+        -N "CN={{ item }}" \
+        -D "{{ item }}" \
+        -k "{{ ipa_getcert_key_location }}" \
+        -f "{{ ipa_getcert_cert_location }}" \
+        -K "host/{{ item }}"
+      args:
+        creates: "{{ ipa_getcert_cert_location }}/{{ item }}.crt"
+      with_items: "{{ ipa_getcert_requested_hostnames }}"
+      register: ipa_cert_request
+
+    - name: Symlink the fqdn certificate as localhost
+      file:
+        state: link
+        force: true
+        src: "{{ item.src }}"
+        path: "{{ item.path }}"
+        owner: root
+        group: root
+      with_items:
+        - src: "{{ ipa_getcert_cert_location }}/{{ ipa_getcert_requested_hostnames | first }}.key"
+          path: "{{ ipa_getcert_cert_location }}/localhost.crt"
+        - src: "{{ ipa_getcert_key_location }}/{{ ipa_getcert_requested_hostnames | first }}.key"
+          path: "{{ ipa_getcert_key_location }}/localhost.key"
+
+    - name: Chain link certificates
+      block:
+        - name: Create chain directory
+          file:
+            state: directory
+            path: "{{ ipa_getcert_chain_location }}"
+            owner: root
+            group: "{{ ipa_getcert_group }}"
+            mode: '0750'
+
+        - name: Chain link certs
+          file:
+            state: link
+            src: "{{ ipa_getcert_cert_location }}/{{ item }}.crt"
+            dest: "{{ ipa_getcert_chain_location }}/{{ item }}.crt"
+            owner: root
+            group: root
+          with_items: "{{ ipa_getcert_requested_hostnames }}"
+
+        - name: Chain link keys
+          file:
+            state: link
+            src: "{{ ipa_getcert_key_location }}/{{ item }}.key"
+            path: "{{ ipa_getcert_chain_location }}/{{ item }}.key"
+            owner: root
+            group: root
+          with_items: "{{ ipa_getcert_requested_hostnames }}"
+
+        - name: Assemble the chain
+          assemble:
+            src: "{{ ipa_getcert_chain_location }}"
+            dest: "{{ ipa_getcert_chain_location }}/{{ item }}.pem"
+            regexp: "^{{ item }}.(crt|key)$"
+            owner: root
+            group: "{{ ipa_getcert_group }}"
+            mode: '0640'
+          with_items: "{{ ipa_getcert_requested_hostnames }}"
+      when: ipa_getcert_chain
+  when: ipacheck.rc == 0

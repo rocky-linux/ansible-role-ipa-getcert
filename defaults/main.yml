@@ -1,2 +1,17 @@
 ---
 # ansible default variables - most variables live here
+ipa_getcert_key_location: /etc/pki/tls/private
+ipa_getcert_cert_location: /etc/pki/tls/certs
+
+# List of hostnames that should be requested
+ipa_getcert_requested_hostnames:
+  - "{{ ansible_fqdn }}"
+
+ipa_getcert_fqdn_symlink: true
+ipa_getcert_chain: false
+ipa_getcert_chain_location: /etc/pki/tls/chains
+
+# If an application user/service account needs to be able to
+# view the certificate, set the group here. This is only needed
+# for when chain is true.
+ipa_getcert_group: root
