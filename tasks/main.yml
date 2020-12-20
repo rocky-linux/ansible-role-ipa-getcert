@@ -5,6 +5,7 @@
   shell: /usr/sbin/ipa-client-install --unattended 2>&1 | grep "already configured"
   register: ipacheck
   ignore_errors: true
+  changed_when: false
 
 - name: Check certificate existence
   stat:
@@ -73,7 +74,8 @@
             group: "{{ item.owner | default(ipa_getcert_owner_default) }}"
             mode: '0640'
           with_items: "{{ ipa_getcert_requested_hostnames }}"
-      when: ipa_getcert_chain
+      when:
+        - ipa_getcert_chain
+        - ipa_cert_request.rc == 0
   when:
     - ipacheck.rc == 0
-    - ipa_cert_request.rc == 0
