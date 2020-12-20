@@ -3,9 +3,9 @@ CI Badge
 # ipa-getcert Ansible Role
 A very basic ipa-getcert role used for certificates issued for internal communication. This assumes the client is enrolled with FreeIPA.
 
-This is loosely based on another project on github with some heavy modifications and adapted for the Rocky Linux infrastructure. It may be used and copied.
+This is loosely based on another project on github with some heavy modifications and adapted for the Rocky Linux infrastructure. In particular, we have made it more modular. This may be used and copied.
 
-**Note**: Note that the certificates should auto-renew when requested via `ipa-getcert`. However. if you turn on the chain, you will have to renew that manually.
+**Note**: Note that the certificates should auto-renew when requested via `ipa-getcert`. However. if you turn on the chain, you will have to fix that manually.
 
 ## Getting started
 Ensure all dependencies are installed and then follow the below process
