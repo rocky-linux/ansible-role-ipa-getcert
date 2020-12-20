@@ -7,6 +7,14 @@
   ignore_errors: true
   changed_when: false
 
+- name: Verify host is IPA enrolled
+  assert:
+    that:
+      - ipacheck.rc == 0 | mandatory
+    fail_msg: "System is not enrolled to IPA"
+    success_msg: "IPA enrolled, moving on"
+    quiet: true
+
 - name: Check certificate existence
   stat:
     path: "{{ item.key_location | default(ipa_getcert_cert_default_location) }}/{{ item.name }}.crt"
