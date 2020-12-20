@@ -1,0 +1,21 @@
+#!/bin/bash
+# This script will take care of the certificate process for IPA.
+# There may be more than one request done based on the vars of the playbook.
+
+{% for ipahosts in ipa_getcert_requested_hostnames %}
+/usr/bin/ipa-getcert request -r -w \
+  -I "{{ ipahosts.name }}" \
+  -N "CN={{ ipahosts.name }}" \
+  -D "{{ ipahosts.name }}" \
+  -k "{{ ipahosts.key_location | default(ipa_getcert_key_default_location) }}" \
+  -f "{{ ipahosts.cert_location | default(ipa_getcert_cert_default_location) }}" \
+  {% if ipahosts.postcmd %}
+  -C "{{ ipahosts.postcmd }}" \
+  {% endif %}
+  {% if ipahosts.owner %}
+  -O "{{ ipahosts.owner }}" \
+  -o "{{ ipahosts.owner }}" \
+  {% endif %}
+  -K "host/{{ ipahosts.name }}"
+
+{% endfor %}

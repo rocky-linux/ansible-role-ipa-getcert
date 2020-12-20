@@ -1,17 +1,25 @@
 ---
 # ansible default variables - most variables live here
-ipa_getcert_key_location: /etc/pki/tls/private
-ipa_getcert_cert_location: /etc/pki/tls/certs
+ipa_getcert_key_default_location: /etc/pki/tls/private
+ipa_getcert_cert_default_location: /etc/pki/tls/certs
+ipa_getcert_owner_default: root
 
 # List of hostnames that should be requested
 ipa_getcert_requested_hostnames:
-  - "{{ ansible_fqdn }}"
+  - name: "{{ ansible_fqdn }}"
+    key_location: /etc/pki/tls/private
+    cert_location: /etc/pki/tls/certs
 
-ipa_getcert_fqdn_symlink: true
+# If you need a different ownership, you can setup the above sort of like this:
+# ipa_getcert_requested_hostnames:
+#   - name: name
+#     postcmd: "/bin/systemctl restart ejabberd"
+#     owner: ejabberd
+#     key_location: /opt/ejabberd/conf/pki
+#     cert_location: /opt/ejabberd/conf/pki
+
+# This feature coming soon
+#ipa_getcert_fqdn_symlink: true
+
 ipa_getcert_chain: false
 ipa_getcert_chain_location: /etc/pki/tls/chains
-
-# If an application user/service account needs to be able to
-# view the certificate, set the group here. This is only needed
-# for when chain is true.
-ipa_getcert_group: root
