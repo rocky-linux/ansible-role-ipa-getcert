@@ -1,14 +1,14 @@
 ---
 # ansible default variables - most variables live here
-ipa_getcert_key_default_location: /etc/pki/tls/private
-ipa_getcert_cert_default_location: /etc/pki/tls/certs
+ipa_getcert_key_default_location: "/etc/pki/tls/private/{{ ansible_fqdn }}.key"
+ipa_getcert_cert_default_location: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt"
 ipa_getcert_owner_default: root
 
 # List of hostnames that should be requested
 ipa_getcert_requested_hostnames:
   - name: "{{ ansible_fqdn }}"
-    key_location: /etc/pki/tls/private
-    cert_location: /etc/pki/tls/certs
+    key_location: /etc/pki/tls/private/name.key
+    cert_location: /etc/pki/tls/certs/name.crt
 
 # If you need a different ownership, you can setup the above sort of like this:
 # ipa_getcert_requested_hostnames:
