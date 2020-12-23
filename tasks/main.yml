@@ -15,22 +15,6 @@
     success_msg: "IPA enrolled, moving on"
     quiet: true
 
-- name: Check certificate existence
-  stat:
-    path: "{{ item.key_location | default(ipa_getcert_cert_default_location) }}/{{ item.name }}.crt"
-  register: cert_results
-  with_items: "{{ ipa_getcert_requested_hostnames }}"
-  ignore_errors: true
-
-- name: Verify certificate existence
-  assert:
-    that:
-      - not item.stat.exists | mandatory
-    fail_msg: "Certificate already exists!"
-    success_msg: "Certificate doesn't exist, moving on"
-    quiet: true
-  with_items: "{{ cert_results.results }}"
-
 - name: IPA Certificate Operations
   block:
     - name: Deploy ipa-getcert script
