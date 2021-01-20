@@ -18,8 +18,21 @@ ipa_getcert_requested_hostnames:
 #     key_location: /opt/ejabberd/conf/pki
 #     cert_location: /opt/ejabberd/conf/pki
 
+# If you are using NSS.
+# ipa_getcert_nss: true
+# ipa_getcert_requested_hostnames:
+#   - name: name
+#     postcmd: "/bin/systemctl restart sigul_server"
+#     owner: sigul
+#     nss_db_dir: /etc/pki/tls/nss
+#     nss_nickname: name
+
 # This feature coming soon
 #ipa_getcert_fqdn_symlink: true
 
 ipa_getcert_chain: false
 ipa_getcert_chain_location: /etc/pki/tls/chains
+
+# Note that when you set this to true, key_location and cert_location are
+# effectively ignored.
+ipa_getcert_nss: false

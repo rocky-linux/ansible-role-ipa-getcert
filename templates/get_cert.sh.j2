@@ -3,12 +3,24 @@
 # There may be more than one request done based on the vars of the playbook.
 
 {% for ipahosts in ipa_getcert_requested_hostnames %}
+
+{% if ipa_getcert_nss %}
+if [ ! -d "{{ ipahosts.nss_db_dir }}" && ! -L "{{ ipahosts.nss_db_dir }}" ]; then
+   mkdir -p {{ ipa_getcert_nss }}
+fi
+{% endif %}
+
 /usr/bin/ipa-getcert request -r -w \
   -I "{{ ipahosts.name }}" \
   -N "CN={{ ipahosts.name }}" \
   -D "{{ ipahosts.name }}" \
+  {% if ipa_getcert_nss %}
+  -d {{ ipahosts.nss_db_dir }} \
+  -n {{ ipahosts.nss_nickname }} \
+  {% else %}
   -k "{{ ipahosts.key_location | default(ipa_getcert_key_default_location) }}" \
   -f "{{ ipahosts.cert_location | default(ipa_getcert_cert_default_location) }}" \
+  {% endif %}
   {% if ipahosts.postcmd %}
   -C "{{ ipahosts.postcmd }}" \
   {% endif %}
