@@ -2,6 +2,7 @@
 # ansible default variables - most variables live here
 ipa_getcert_key_default_location: "/etc/pki/tls/private/{{ ansible_fqdn }}.key"
 ipa_getcert_cert_default_location: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt"
+ipa_getcert_nss_default_location: "/etc/pki/tls/nss"
 ipa_getcert_owner_default: root
 
 # List of hostnames that should be requested
