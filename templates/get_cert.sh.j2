@@ -15,6 +15,11 @@ fi
   -I "{{ ipahosts.name }}" \
   -N "CN={{ ipahosts.name }}" \
   -D "{{ ipahosts.name }}" \
+  {% if ipahosts.cnames is defined %}
+  {% for cname in ipahosts.cnames %}
+  -D "{{ cname }}" \
+  {% endfor %}
+  {% endif %}
   {% if ipa_getcert_nss %}
   -d "${nss_db_path}" \
   -n {{ ipahosts.nss_nickname | default(ansible_fqdn) }} \

@@ -28,6 +28,16 @@ ipa_getcert_requested_hostnames:
 #     nss_db_dir: /etc/pki/tls/nss
 #     nss_nickname: name
 
+# If you are using cnames
+# ipa_getcert_requested_hostnames:
+#   - name: name
+#     postcmd: "/bin/systemctl restart httpd"
+#     owner: apache
+#     key_location: /etc/pki/tls/private/web.crt
+#     cert_location: /etc/pki/tls/certs/web.crt
+#     cnames:
+#       - cname.example.com
+
 # This feature coming soon
 #ipa_getcert_fqdn_symlink: true
 
