@@ -67,7 +67,7 @@
             mode: '0640'
           with_items: "{{ ipa_getcert_requested_hostnames }}"
       when:
-        - ipa_getcert_chain
+        - ipa_getcert_chain|bool
         - ipa_cert_request.rc == 0
   rescue:
     - name: "Erroring out with message"
