@@ -27,10 +27,10 @@ fi
   -k "{{ ipahosts.key_location | default(ipa_getcert_key_default_location) }}" \
   -f "{{ ipahosts.cert_location | default(ipa_getcert_cert_default_location) }}" \
   {% endif %}
-  {% if ipahosts.postcmd %}
+  {% if ipahosts.postcmd is defined %}
   -C "{{ ipahosts.postcmd }}" \
   {% endif %}
-  {% if ipahosts.owner %}
+  {% if ipahosts.owner is defined %}
   -O "{{ ipahosts.owner }}" \
   -o "{{ ipahosts.owner }}" \
   {% endif %}
