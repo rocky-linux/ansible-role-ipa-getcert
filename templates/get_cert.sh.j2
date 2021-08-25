@@ -34,6 +34,6 @@ fi
   -O "{{ ipahosts.owner }}" \
   -o "{{ ipahosts.owner }}" \
   {% endif %}
-  -K "host/{{ ipahosts.name }}"
+  -K "{{ ipahosts.service | default('host') }}/{{ ipahosts.name }}"
 
 {% endfor %}
