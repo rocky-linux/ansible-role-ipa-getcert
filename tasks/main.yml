@@ -8,7 +8,7 @@
   changed_when: false
 
 - name: Verify host is IPA enrolled
-  assert:
+  ansible.builtin.assert:
     that:
       - ipacheck.rc == 0 | mandatory
     fail_msg: "System is not enrolled to IPA"
@@ -18,7 +18,7 @@
 - name: IPA Certificate Operations
   block:
     - name: Deploy ipa-getcert script
-      template:
+      ansible.builtin.template:
         src: "get_cert.sh.j2"
         dest: "/root/get_cert.sh"
         owner: root
@@ -26,13 +26,13 @@
         mode: '0750'
 
     - name: Request Certificate
-      raw: /root/get_cert.sh
+      ansible.builtin.raw: /root/get_cert.sh
       register: ipa_cert_request
 
     - name: Chain link certificates
       block:
         - name: Create chain directory
-          file:
+          ansible.builtin.file:
             state: directory
             path: "{{ ipa_getcert_chain_location }}"
             owner: root
@@ -40,7 +40,7 @@
             mode: '0750'
 
         - name: Chain link certs
-          file:
+          ansible.builtin.file:
             state: link
             src: "{{ item.cert_location | default(ipa_getcert_cert_default_location) }}/{{ item.name }}.crt"
             dest: "{{ ipa_getcert_chain_location }}/{{ item.name }}.crt"
@@ -49,7 +49,7 @@
           with_items: "{{ ipa_getcert_requested_hostnames }}"
 
         - name: Chain link keys
-          file:
+          ansible.builtin.file:
             state: link
             src: "{{ item.key_location | default(ipa_getcert_cert_default_location) }}/{{ item.name }}.key"
             path: "{{ ipa_getcert_chain_location }}/{{ item.name }}.key"
@@ -58,7 +58,7 @@
           with_items: "{{ ipa_getcert_requested_hostnames }}"
 
         - name: Assemble the chain
-          assemble:
+          ansible.builtin.assemble:
             src: "{{ ipa_getcert_chain_location }}"
             dest: "{{ ipa_getcert_chain_location }}/{{ item.name }}.pem"
             regexp: "^{{ item.name }}.(crt|key)$"
@@ -71,7 +71,7 @@
         - ipa_cert_request.rc == 0
   rescue:
     - name: "Erroring out with message"
-      debug:
+      ansible.builtin.debug:
         msg: "We caught an error, likely with the ipa-getcert script. Please verify the output."
   when:
     - ipacheck.rc == 0
